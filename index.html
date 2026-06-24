@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GESTIO - Painel de Gestão Comercial & Financeira</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <nav class="bg-blue-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                <span class="font-bold text-lg tracking-wide">GestãoLocal PRO</span>
+            </div>
+            <div class="flex space-x-2 text-sm">
+                <button onclick="switchTab('financeiro')" class="tab-btn bg-blue-700 px-3 py-2 rounded font-medium focus:outline-none">Financeiro</button>
+                <button onclick="switchTab('crescimento')" class="tab-btn hover:bg-blue-500 px-3 py-2 rounded font-medium focus:outline-none">Crescimento</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-6">
+
+        <section id="tab-financeiro" class="space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Receitas (Mês)</p>
+                        <h3 id="card-receitas" class="text-2xl font-bold text-green-600">R$ 0,00</h3>
+                    </div>
+                    <div class="p-3 bg-green-50 text-green-600 rounded-full"><i data-lucide="trending-up"></i></div>
+                </div>
+                
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Despesas (Mês)</p>
+                        <h3 id="card-despesas" class="text-2xl font-bold text-red-600">R$ 0,00</h3>
+                    </div>
+                    <div class="p-3 bg-red-50 text-red-600 rounded-full"><i data-lucide="trending-down"></i></div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Saldo Atual</p>
+                        <h3 id="card-saldo" class="text-2xl font-bold text-gray-800">R$ 0,00</h3>
+                    </div>
+                    <div class="p-3 bg-gray-50 text-gray-600 rounded-full"><i data-lucide="wallet"></i></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 h-fit">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-700">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i> Novo Lançamento
+                    </h2>
+                    <form id="finance-form" onsubmit="addTransaction(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Descrição</label>
+                            <input type="text" id="desc" required placeholder="Ex: Venda de produto, Aluguel..." class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Valor (R$)</label>
+                            <input type="number" id="val" step="0.01" required placeholder="0,00" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Tipo</label>
+                            <select id="type" class="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="receita">Receita (+)</option>
+                                <option value="despesa">Despesa (-)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition shadow-sm">Adicionar</button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-700">
+                        <i data-lucide="list-ordered" class="w-5 h-5 text-blue-600"></i> Fluxo de Caixa Recente
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-100 text-xs font-semibold uppercase text-gray-400">
+                                    <th class="pb-2">Descrição</th>
+                                    <th class="pb-2">Tipo</th>
+                                    <th class="pb-2 text-right">Valor</th>
+                                    <th class="pb-2 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-history" class="divide-y divide-gray-50 text-sm">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="tab-crescimento" class="hidden space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-700">
+                        <i data-lucide="calculator" class="w-5 h-5 text-indigo-600"></i> Formação de Preço Inteligente
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Custo do Produto/Insumo (R$)</label>
+                            <input type="number" id="calc-custo" value="50" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Despesas Fixas & Impostos (%)</label>
+                            <input type="number" id="calc-fixo" value="20" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Margem de Lucro Desejada (%)</label>
+                            <input type="number" id="calc-lucro" value="30" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none">
+                        </div>
+                        <button onclick="calcularPreco()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition shadow-sm">Sugerir Preço de Venda</button>
+                        
+                        <div id="resultado-preco" class="hidden mt-4 p-4 bg-indigo-50 border border-indigo-100 rounded-lg text-center">
+                            <p class="text-sm text-indigo-700 font-medium">Preço Mínimo de Venda Recomendado:</p>
+                            <h3 id="txt-preco-final" class="text-2xl font-bold text-indigo-900 mt-1">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-gray-700">
+                        <i data-lucide="megaphone" class="w-5 h-5 text-purple-600"></i> Assistente de Copy (WhatsApp/Insta)
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Tipo de Campanha</label>
+                            <select id="copy-tipo" class="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none">
+                                <option value="promo">Promoção Imperdível / Desconto</option>
+                                <option value="recorrência">Sumido! (Atrair cliente antigo)</option>
+                                <option value="novidade">Chegou Novidade no Estoque</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Nome do Produto ou Serviço</label>
+                            <input type="text" id="copy-produto" placeholder="Ex: Hambúrguer Artesanal, Manicure..." class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none">
+                        </div>
+                        <button onclick="gerarCopy()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-lg transition shadow-sm">Gerar Texto de Vendas</button>
+                        
+                        <div id="resultado-copy" class="hidden mt-4 space-y-2">
+                            <textarea id="txt-copy-gerada" rows="5" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none"></textarea>
+                            <button onclick="copiarTexto()" class="w-full text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 py-2 rounded border border-purple-200 transition">Copiar Texto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        // Inicialização dos Ícones Lucide
+        lucide.createIcons();
+
+        // Banco de Dados Local Simulado (LocalStorage para persistência básica no navegador)
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+        // Chaveador de Abas
+        function switchTab(tab) {
+            const tabFin = document.getElementById('tab-financeiro');
+            const tabCres = document.getElementById('tab-crescimento');
+            const btns = document.querySelectorAll('.tab-btn');
+
+            btns.forEach(btn => btn.classList.remove('bg-blue-700', 'bg-blue-500'));
+            
+            if(tab === 'financeiro') {
+                tabFin.classList.remove('hidden');
+                tabCres.classList.add('hidden');
+                event.target.classList.add('bg-blue-700');
+            } else {
+                tabFin.classList.add('hidden');
+                tabCres.classList.remove('hidden');
+                event.target.classList.add('bg-blue-700');
+            }
+        }
+
+        // Funções do Módulo Financeiro
+        function updateDashboard() {
+            let receitas = 0;
+            let despesas = 0;
+
+            transactions.forEach(t => {
+                if(t.type === 'receita') receitas += t.value;
+                else despesas += t.value;
+            });
+
+            const saldo = receitas - despesas;
+
+            document.getElementById('card-receitas').innerText = `R$ ${receitas.toFixed(2).replace('.', ',')}`;
+            document.getElementById('card-despesas').innerText = `R$ ${despesas.toFixed(2).replace('.', ',')}`;
+            
+            const cardSaldo = document.getElementById('card-saldo');
+            cardSaldo.innerText = `R$ ${saldo.toFixed(2).replace('.', ',')}`;
+            if(saldo < 0) {
+                cardSaldo.className = "text-2xl font-bold text-red-600";
+            } else {
+                cardSaldo.className = "text-2xl font-bold text-green-600";
+            }
+
+            renderList();
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        function addTransaction(e) {
+            e.preventDefault();
+            const desc = document.getElementById('desc').value;
+            const val = parseFloat(document.getElementById('val').value);
+            const type = document.getElementById('type').value;
+
+            transactions.unshift({
+                id: Date.now(),
+                desc,
+                value: val,
+                type
+            });
+
+            document.getElementById('finance-form').reset();
+            updateDashboard();
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            updateDashboard();
+        }
+
+        function renderList() {
+            const tbody = document.getElementById('transaction-history');
+            tbody.innerHTML = '';
+
+            if(transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400 italic">Nenhum lançamento registrado este mês.</td></tr>`;
+                return;
+            }
+
+            transactions.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50/50 transition";
+                tr.innerHTML = `
+                    <td class="py-3 font-medium text-gray-700">${t.desc}</td>
+                    <td class="py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${t.type === 'receita' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}">${t.type.toUpperCase()}</span></td>
+                    <td class="py-3 text-right font-bold ${t.type === 'receita' ? 'text-green-600' : 'text-red-600'}">R$ ${t.value.toFixed(2).replace('.', ',')}</td>
+                    <td class="py-3 text-center">
+                        <button onclick="deleteTransaction(${t.id})" class="text-gray-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // Funções do Módulo de Crescimento (Precificação)
+        function calcularPreco() {
+            const custo = parseFloat(document.getElementById('calc-custo').value) || 0;
+            const fixo = parseFloat(document.getElementById('calc-fixo').value) || 0;
+            const lucro = parseFloat(document.getElementById('calc-lucro').value) || 0;
+
+            // Markup Calculado: Preço = Custo / (1 - (Fixo% + Lucro%)/100)
+            const divisor = 1 - ((fixo + lucro) / 100);
+            
+            if(divisor <= 0) {
+                alert("As porcentagens somadas não podem ultrapassar ou igualar 100%!");
+                return;
+            }
+
+            const precoFinal = custo / divisor;
+
+            document.getElementById('txt-preco-final').innerText = `R$ ${precoFinal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resultado-preco').classList.remove('hidden');
+        }
+
+        // Funções do Módulo de Crescimento (Marketing)
+        function gerarCopy() {
+            const tipo = document.getElementById('copy-tipo').value;
+            const produto = document.getElementById('copy-produto').value || "nosso serviço principal";
+            const campoTexto = document.getElementById('txt-copy-gerada');
+            
+            let copy = "";
+
+            if(tipo === 'promo') {
+                copy = `🚨 PROMOÇÃO IMPERDÍVEL! 🚨\n\nQuer garantir o seu ${produto} com um preço especial que cabe perfeitamente no bolso?\n\n🔥 É por tempo limitado ou enquanto durarem os estoques!\n\n👉 Clique no botão abaixo e garanta o seu direto pelo WhatsApp antes que acabe!`;
+            } else if(tipo === 'recorrência') {
+                copy = `Olá! Notamos que você já faz um tempo que não aparece para garantir seu ${produto} favorito. 🥺\n\nEstamos com saudades! Para celebrar seu retorno, preparamos uma condição super especial para o seu próximo pedido.\n\nChame a gente aqui no Whats e diga "QUERO MEU MIMO" para saber mais! ✨`;
+            } else {
+                copy = `💥 NOVIDADE QUENTINHA NA ÁREA! 💥\n\nAcabou de chegar reposição de ${produto} com a qualidade máxima que você já conhece!\n\nSeja um dos primeiros a garantir o seu antes que esgote. Atendimento rápido e direto por aqui! 😉📦`;
+            }
+
+            campoTexto.value = copy;
+            document.getElementById('resultado-copy').classList.remove('hidden');
+        }
+
+        function copiarTexto() {
+            const textarea = document.getElementById('txt-copy-gerada');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Texto copiado com sucesso! Agora é só colar no WhatsApp.');
+        }
+
+        // Execução Inicial
+        updateDashboard();
+    </script>
+</body>
+</html>
